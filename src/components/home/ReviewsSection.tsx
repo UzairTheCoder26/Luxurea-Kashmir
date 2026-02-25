@@ -17,8 +17,18 @@ export function ReviewsSection() {
   useEffect(() => {
     fetch("/api/reviews")
       .then((r) => r.json())
-      .then(setReviews)
-      .catch(() => {});
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setReviews(data);
+        } else {
+          console.error("Unexpected reviews response:", data);
+          setReviews([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load reviews", err);
+        setReviews([]);
+      });
   }, []);
 
   if (reviews.length === 0) return null;

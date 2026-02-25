@@ -20,8 +20,24 @@ export default function ShopPage() {
 
   useEffect(() => {
     fetch("/api/products")
-      .then((r) => r.json())
-      .then(setProducts)
+      .then(async (r) => {
+        try {
+          const data = await r.json();
+          if (Array.isArray(data)) {
+            setProducts(data);
+          } else {
+            console.error("Unexpected products response:", data);
+            setProducts([]);
+          }
+        } catch (err) {
+          console.error("Failed to parse products response", err);
+          setProducts([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load products", err);
+        setProducts([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
