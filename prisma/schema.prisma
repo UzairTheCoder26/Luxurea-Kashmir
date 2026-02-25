@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String
+  price           Int
+  comparePrice    Int?
+  images          String
+  embroidery      String?
+  fabric          String?
+  craftsmanship   String?
+  careInstructions String?
+  deliveryDays    Int      @default(7)
+  sizeChart       String?
+  inStock         Boolean  @default(true)
+  stockQuantity   Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  orders          OrderItem[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderId       String      @unique
+  status        String      @default("Pending")
+  fullName      String
+  phone         String
+  whatsapp      String?
+  address       String
+  city          String
+  state         String
+  pincode       String
+  notes         String?
+  total         Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  size      String
+  quantity  Int
+  price     Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model SiteContent {
+  id      String @id @default(cuid())
+  key     String @unique
+  content String
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  name      String
+  rating    Int
+  text      String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
